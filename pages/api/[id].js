@@ -16,6 +16,7 @@ export default catchErrors(async (req, res) => {
 
   console.log(`shortcode: ${shortcode}`);
   //checking if see if this code exists in directory
+  await dbConnect();
   const urlCode = await UrlCode.findOne({ indexurl: shortcode });
 
   if (!urlCode) {

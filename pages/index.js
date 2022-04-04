@@ -2,7 +2,7 @@ import Head from 'next/head';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
-export default function Home() {
+export default function Home({ fullUrl }) {
   const [url, setUrl] = useState(''); //URL submitted by user
   const [response, setResponse] = useState(''); //response from api, includes short url number if successful
   const [isSubmitted, setSubmit] = useState(false); //boolean to check if user has submitted url
@@ -28,7 +28,7 @@ export default function Home() {
         .then((data) => {
           console.log(data);
           //if no error, then set response to short_url value
-          if (!data.error) setResponse(`${localhost}${data.short_url}`);
+          if (!data.error) setResponse(`${data.full_short_url}`);
           else setResponse('Please Enter Valid URL');
         });
       // console.log(response);
@@ -66,16 +66,7 @@ export default function Home() {
         </form>
         <div id='result'>
           <h3>Your Shortened URL</h3>
-          {/*          <a href={`${router.pathname}api/${response}`}>
-            {`${router.pathname}api/${response}`}
-          </a> */}
-          {response ? (
-            <p>
-              <a href={`${response}`} target='_blank'>{`${response}`}</a>
-            </p>
-          ) : (
-            <p>...</p>
-          )}
+          {response ? <a href={`${response}`}>{`${response}`}</a> : <p>...</p>}
         </div>
       </main>
     </div>

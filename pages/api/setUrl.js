@@ -11,7 +11,11 @@ import catchErrors from '../../lib/errorHandlers';
 //entry and assigns url short url code
 export default catchErrors(async (req, res) => {
   const url = req.body.url;
-  console.log(`url:  ${url}`);
+  //get full url so we can send back full short url in response
+  const hostname =
+    process.env.NODE_ENV === 'production'
+      ? process.env.VERCEL_URL
+      : process.env.LOCAL_HOST;
 
   //addtional validation check
   const httpCheck = /^https?:\/\//;
@@ -22,9 +26,10 @@ export default catchErrors(async (req, res) => {
 
   //extracting domain name
   const [fullUrl, domain] = url.match(matchDomain);
-  console.log(`domain: ${domain}`);
+  // console.log(`domain: ${domain}`);
 
   //checking to see if url is ready in databse
+  await dbConnect();
   const urlCode = await UrlCode.findOne({ url });
   if (!urlCode) {
     //new url , add to database
@@ -43,12 +48,17 @@ export default catchErrors(async (req, res) => {
     const newUrl = await new UrlCode({ indexurl: indexurl, url: url });
     console.log(`index: ${newUrl.indexurl}, url: ${newUrl.url}`);
     await newUrl.save();
-    return res.json({ original_url: newUrl.url, short_url: newUrl.indexurl });
+    return res.json({
+      original_url: newUrl.url,
+      short_url: newUrl.indexurl,
+      full_short_url: `${hostname}api/${urlCode.indexurl}`,
+    });
   } else {
     //url already exists is database, return existing info
     return res.json({
       original_url: urlCode.url,
       short_url: urlCode.indexurl,
+      full_short_url: `${hostname}api/${urlCode.indexurl}`,
     });
   }
 });
