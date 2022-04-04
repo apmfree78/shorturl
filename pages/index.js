@@ -38,7 +38,7 @@ export default function Home({ fullUrl }) {
   });
 
   const setSubmitTrue = (event) => {
-    event.preventDefault();
+    // event.preventDefault();
     setSubmit(true);
   };
 
