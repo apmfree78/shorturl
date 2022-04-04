@@ -66,7 +66,11 @@ export default function Home({ fullUrl }) {
         </form>
         <div id='result'>
           <h3>Your Shortened URL</h3>
-          {response ? <a href={`${response}`}>{`${response}`}</a> : <p>...</p>}
+          {response ? (
+            <a href={`${response} target=_blank`}>{`${response}`}</a>
+          ) : (
+            <p>...</p>
+          )}
         </div>
       </main>
     </div>
