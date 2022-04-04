@@ -1,7 +1,10 @@
 import dbConnect from '../../lib/dbConnect';
 import UrlCode from '../../models/url';
+import catchErrors from '../../lib/errorHandlers';
 
-export default async (req, res) => {
+//reads query from url [id], if this shortcode exists
+//in database then 301 redirects to correponding url
+export default catchErrors(async (req, res) => {
   //extracting short url code from params
   const shortcode = parseInt(req.query.id);
   console.log(`req.query: ${JSON.stringify(req.query)}`);
@@ -25,4 +28,4 @@ export default async (req, res) => {
     console.log(`destination: ${urlCode.url}`);
     return res.redirect(301, urlCode.url);
   }
-};
+});

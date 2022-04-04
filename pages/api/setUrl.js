@@ -1,7 +1,15 @@
 import dbConnect from '../../lib/dbConnect';
 import UrlCode from '../../models/url';
+import catchErrors from '../../lib/errorHandlers';
 
-export default async (req, res) => {
+//takes POST request from submitted by
+//frontend when user enter and submits URL
+//1. validates url
+//2. checks if url is already in database
+//if so, then just return entry
+//3. if url is new, then creates new database
+//entry and assigns url short url code
+export default catchErrors(async (req, res) => {
   const url = req.body.url;
   console.log(`url:  ${url}`);
 
@@ -43,4 +51,4 @@ export default async (req, res) => {
       short_url: urlCode.indexurl,
     });
   }
-};
+});

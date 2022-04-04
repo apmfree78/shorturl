@@ -1,14 +1,21 @@
 import Head from 'next/head';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 
 export default function Home() {
-  const [url, setUrl] = useState('');
-  const [response, setResponse] = useState('');
-  const [isSubmitted, setSubmit] = useState(false);
+  const [url, setUrl] = useState(''); //URL submitted by user
+  const [response, setResponse] = useState(''); //response from api, includes short url number if successful
+  const [isSubmitted, setSubmit] = useState(false); //boolean to check if user has submitted url
+  const router = useRouter(); //use this hook to determine pathname
+  const localhost = 'http://localhost:3001/api/'; //localhost url for dev
 
+  //useEffect for fetch POST submission of URL user enters
+  //data will be submitted to backend /api/ , generate
+  //short_url number to use for shortened url, and
+  //record to mongodb database
   useEffect(() => {
     if (isSubmitted) {
-      console.log(url);
+      //setup submit options for POST request
       const submitOptions = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -17,8 +24,13 @@ export default function Home() {
       //POST request to server
       console.log(`......................useEffect url:${url}`);
       fetch('/api/setUrl', submitOptions)
-        .then((res) => res.text())
-        .then((data) => setResponse(data));
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
+          //if no error, then set response to short_url value
+          if (!data.error) setResponse(`${localhost}${data.short_url}`);
+          else setResponse('Please Enter Valid URL');
+        });
       // console.log(response);
       //reset values
       setSubmit(false);
@@ -36,11 +48,12 @@ export default function Home() {
         <title>ShortIt Url Shortner</title>
         <link rel='icon' href='/favicon.ico' />
       </Head>
-
+      {/* main input form where user submits url to shorten */}
       <main>
+        <h1>Shortit URL Shortener</h1>
         <form onSubmit={(e) => setSubmitTrue(e)}>
           <label htmlFor='url'>
-            Add URL to shorten:
+            <span id='form_label'>Enter URL:</span>
             <input
               type='url'
               name='url'
@@ -51,7 +64,19 @@ export default function Home() {
             <button type='submit'>Submit</button>
           </label>
         </form>
-        <p>{response}</p>
+        <div id='result'>
+          <h3>Your Shortened URL</h3>
+          {/*          <a href={`${router.pathname}api/${response}`}>
+            {`${router.pathname}api/${response}`}
+          </a> */}
+          {response ? (
+            <p>
+              <a href={`${response}`} target='_blank'>{`${response}`}</a>
+            </p>
+          ) : (
+            <p>...</p>
+          )}
+        </div>
       </main>
     </div>
   );
