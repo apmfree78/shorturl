@@ -14,7 +14,7 @@ export default catchErrors(async (req, res) => {
   //get full url so we can send back full short url in response
   const hostname =
     process.env.NODE_ENV === 'production'
-      ? process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}/`
       : process.env.LOCAL_HOST;
 
   //addtional validation check
